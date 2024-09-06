@@ -1,55 +1,32 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../config/database';
 
 class OfframpTransaction extends Model {
   public id!: string;
-  public walletAddress!: string;
   public mpesaNumber!: string;
   public amount!: number;
   public status!: 'initiated' | 'unprocessed' | 'completed';
-  public createdAt!: Date;
-  public updatedAt!: Date;
 }
 
-export default (sequelize: Sequelize) => {
-  OfframpTransaction.init(
-    {
-      id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-      },
-      walletAddress: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      mpesaNumber: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      amount: {
-        type: DataTypes.DECIMAL(18, 8),
-        allowNull: false,
-      },
-      status: {
-        type: DataTypes.ENUM('initiated', 'unprocessed', 'completed'),
-        defaultValue: 'initiated',
-        allowNull: false,
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
-      updatedAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
-    },
-    {
-      sequelize,
-      tableName: 'OfframpTransactions',
-      timestamps: true,
-    }
-  );
+OfframpTransaction.init({
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true,
+  },
+  mpesaNumber: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  amount: {
+    type: DataTypes.DECIMAL(18, 8),
+    allowNull: false,
+  },
+  status: {
+    type: DataTypes.ENUM('initiated', 'unprocessed', 'completed'),
+    defaultValue: 'initiated',
+    allowNull: false,
+  },
+}, { sequelize, modelName: 'OfframpTransaction' });
 
-  return OfframpTransaction;
-};
+export default OfframpTransaction;
