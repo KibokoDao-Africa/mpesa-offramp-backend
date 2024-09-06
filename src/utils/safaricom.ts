@@ -115,35 +115,3 @@ export const performPaybillPayment = async (paybillNumber: string, amount: numbe
 
   return response;
 };
-
-// B2C (Business to Customer) Payment
-export const sendMpesaB2C = async (mpesaNumber: string, amount: number) => {
-  const token = await getOAuthToken();
-
-  const { data: response } = await axios.post(
-    process.env.SAFARICOM_B2C_URL!,
-    {
-      InitiatorName: process.env.SAFARICOM_INITIATOR_NAME!,
-      SecurityCredential: process.env.SAFARICOM_SECURITY_CREDENTIAL!,
-      CommandID: 'BusinessPayment',
-      Amount: amount,
-      PartyA: process.env.SAFARICOM_SHORT_CODE!,
-      PartyB: mpesaNumber,
-      Remarks: 'B2C Payment',
-      QueueTimeOutURL: `${process.env.CALLBACK_URL}/b2c-timeout`,
-      ResultURL: `${process.env.CALLBACK_URL}/b2c-result`,
-      Occasion: '',
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  return {
-    requestId: response.ConversationID,
-    responseCode: response.ResponseCode,
-    responseDescription: response.ResponseDescription,
-  };
-};
