@@ -1,9 +1,10 @@
 import db from '../models';
-import { sendMpesaB2C } from '../utils/safaricom';
+import { sendB2CPayment } from '../utils/safaricom';
 import offrampService from './offrampService';
 
 const createB2CRequest = async (data: any) => {
-  const response = await sendMpesaB2C(data.mpesaNumber, data.amount);
+  const response = await sendB2CPayment(data.mpesaNumber, data.amount);
+  
   const b2cRequest = await db.B2CRequest.create({
     transactionId: data.transactionId,
     requestId: response.requestId,

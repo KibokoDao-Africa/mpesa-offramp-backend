@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import { createBuyGoodsRequest, getAllBuyGoodsRequests } from '../controllers/buyGoodsController';
+import express from 'express';
+import { createBuyGoodsTransaction, updateBuyGoodsTransactionStatus } from '../controllers/buyGoodsController';
 
-const router = Router();
+const router = express.Router();
 
-router.post('/', createBuyGoodsRequest);
-router.get('/', getAllBuyGoodsRequests);
+router.post('/', createBuyGoodsTransaction);
+router.put('/status', updateBuyGoodsTransactionStatus);
 
 export default router;

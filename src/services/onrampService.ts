@@ -1,44 +1,48 @@
 import db from '../models';
-import { performSTKPush } from '../utils/safaricom'
+import { performSTKPush } from '../utils/safaricom';
 
 const createOnrampTransaction = async (data: any) => {
   const transaction = await db.OnrampTransaction.create(data);
-  return transaction;
-};
+  const response = await performSTKPush(transaction.phoneNumber, transaction.amount);
 
-const getAllOnrampTransactions = async () => {
-  const transactions = await db.OnrampTransaction.findAll();
-  return transactions;
-};
+  if (response.statusCode === 200) {
+    await db.STKPushRequest.create({
+      transactionId: transaction.id,
+      requestId: response.data.requestId,
+      status: 'pending',
+    });
 
-const updateOnrampTransactionStatus = async (id: string, status: 'initiated' | 'unprocessed' | 'completed') => {
-  const transaction = await db.OnrampTransaction.findByPk(id);
-  if (transaction) {
-    transaction.status = status;
+    transaction.status = 'unprocessed';
     await transaction.save();
+
+    await callOnrampSmartContract(transaction.id);
   }
+
   return transaction;
-};
-
-const handleSTKPush = async (transactionId: string) => {
-  const transaction = await db.OnrampTransaction.findByPk(transactionId);
-  if (transaction) {
-    const response = await performSTKPush(transaction.phoneNumber, transaction.amount);
-    
-    // Update status to unprocessed
-    await updateOnrampTransactionStatus(transactionId, 'unprocessed');
-
-    // Further steps: Call smart contract function and handle Onchain transaction
-  }
 };
 
 const handleOnchainTransaction = async (data: any) => {
-  const onchainTransaction = await db.OnrampOnchainTransaction.create(data);
+  await db.OnrampOnchainTransaction.create(data);
 
-  // Update the related transaction's status to "completed"
-  await updateOnrampTransactionStatus(onchainTransaction.transactionId, 'completed');
-
-  return onchainTransaction;
+  const transaction = await db.OnrampTransaction.findByPk(data.transactionId);
+  if (transaction) {
+    transaction.status = 'completed';
+    await transaction.save();
+  }
 };
 
-export default { createOnrampTransaction, getAllOnrampTransactions, updateOnrampTransactionStatus, handleSTKPush, handleOnchainTransaction };
+const updateStatus = async (transactionId: string, status: 'initiated' | 'unprocessed' | 'completed') => {
+  const transaction = await db.OnrampTransaction.findByPk(transactionId);
+  if (!transaction) {
+    throw new Error('Transaction not found');
+  }
+  transaction.status = status;
+  await transaction.save();
+  return transaction;
+};
+
+export default { createOnrampTransaction, handleOnchainTransaction, updateStatus };
+
+function callOnrampSmartContract(id: string) {
+  throw new Error('Function not implemented.');
+}

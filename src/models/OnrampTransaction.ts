@@ -1,10 +1,12 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database';  // Default import, not destructuring
+import sequelize from '../config/database';
 
 class OnrampTransaction extends Model {
   public id!: string;
   public phoneNumber!: string;
   public amount!: number;
+  public crypto!: string; // New field for cryptocurrency name
+  public noOfTokens!: number; // New field for the number of tokens
   public status!: 'initiated' | 'unprocessed' | 'completed';
 }
 
@@ -19,6 +21,14 @@ OnrampTransaction.init({
     allowNull: false,
   },
   amount: {
+    type: DataTypes.DECIMAL(18, 8),
+    allowNull: false,
+  },
+  crypto: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  noOfTokens: {
     type: DataTypes.DECIMAL(18, 8),
     allowNull: false,
   },

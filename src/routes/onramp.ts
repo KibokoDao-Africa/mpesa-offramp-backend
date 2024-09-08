@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import { createOnrampTransaction, getAllOnrampTransactions } from '../controllers/onrampController';
+import express from 'express';
+import { createOnrampTransaction, updateOnrampTransactionStatus } from '../controllers/onrampController';
 
-const router = Router();
+const router = express.Router();
 
 router.post('/', createOnrampTransaction);
-router.get('/', getAllOnrampTransactions);
+router.put('/status', updateOnrampTransactionStatus);
 
 export default router;

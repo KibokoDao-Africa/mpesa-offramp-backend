@@ -5,6 +5,8 @@ class BuyGoodsTransaction extends Model {
   public id!: string;
   public tillNumber!: string;
   public amount!: number;
+  public crypto!: string; // New field for cryptocurrency name
+  public noOfTokens!: number; // New field for the number of tokens
   public status!: 'initiated' | 'unprocessed' | 'completed';
 }
 
@@ -19,6 +21,14 @@ BuyGoodsTransaction.init({
     allowNull: false,
   },
   amount: {
+    type: DataTypes.DECIMAL(18, 8),
+    allowNull: false,
+  },
+  crypto: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  noOfTokens: {
     type: DataTypes.DECIMAL(18, 8),
     allowNull: false,
   },

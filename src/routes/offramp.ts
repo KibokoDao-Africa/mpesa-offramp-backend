@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import { createOfframpTransaction, getAllOfframpTransactions } from '../controllers/offrampController';
+import express from 'express';
+import { createOfframpTransaction, updateOfframpTransactionStatus } from '../controllers/offrampController';
 
-const router = Router();
+const router = express.Router();
 
 router.post('/', createOfframpTransaction);
-router.get('/', getAllOfframpTransactions);
+router.put('/status', updateOfframpTransactionStatus);
 
 export default router;

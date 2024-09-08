@@ -1,22 +1,41 @@
 import db from '../models';
-import { performPaybillPayment } from '../utils/safaricom';
+import { processPaybillPayment } from '../utils/safaricom';
 
-const createPaybillRequest = async (data: any) => {
-  const response = await performPaybillPayment(data.paybillNumber, data.amount, data.accountNumber);
-  const paybillRequest = await db.Paybill.create({
-    transactionId: data.transactionId,
-    requestId: response.ConversationID,
-    responseCode: response.ResponseCode,
-    responseDescription: response.ResponseDescription,
-    status: response.ResponseCode === '0' ? 'completed' : 'pending',
-  });
+const createPaybillTransaction = async (data: any) => {
+  const transaction = await db.PaybillTransaction.create(data);
 
-  return paybillRequest;
+  await callPaybillSmartContract(transaction.id);
+
+  transaction.status = 'unprocessed';
+  await transaction.save();
+
+  return transaction;
 };
 
-const getAllPaybillRequests = async () => {
-  const paybillRequests = await db.Paybill.findAll();
-  return paybillRequests;
+const handleOnchainTransaction = async (data: any) => {
+  await db.PaybillOnchainTransaction.create(data);
+
+  const transaction = await db.PaybillTransaction.findByPk(data.transactionId);
+  if (transaction) {
+    transaction.status = 'completed';
+    await transaction.save();
+
+    await processPaybillPayment(transaction.paybillNumber, transaction.amount, transaction.accountNumber);
+  }
 };
 
-export default { createPaybillRequest, getAllPaybillRequests };
+const updatePaybillTransactionStatus = async (transactionId: string, status: 'initiated' | 'unprocessed' | 'completed') => {
+  const transaction = await db.PaybillTransaction.findByPk(transactionId);
+  if (!transaction) {
+    throw new Error('Transaction not found');
+  }
+  transaction.status = status;
+  await transaction.save();
+  return transaction;
+};
+
+export default { createPaybillTransaction, handleOnchainTransaction, updatePaybillTransactionStatus };
+
+function callPaybillSmartContract(id: string) {
+  throw new Error('Function not implemented.');
+}
