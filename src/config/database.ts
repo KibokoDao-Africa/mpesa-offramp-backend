@@ -1,6 +1,7 @@
 import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize(process.env.DATABASE_URL!, {
+const sequelize = new Sequelize('postgresql://postgres:1234@127.0.0.1:5432/postgres', 
+  {
   dialect: 'postgres',
   protocol: 'postgres',
   dialectOptions: {
@@ -10,3 +11,4 @@ const sequelize = new Sequelize(process.env.DATABASE_URL!, {
 });
 
 export default sequelize;
+// host as 127.0.0.1,  port 5432 ,username postgres pasward 1234 database postgres?

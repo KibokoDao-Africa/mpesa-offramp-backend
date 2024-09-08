@@ -4,6 +4,7 @@ import onrampService from '../services/onrampService';
 export const createOnrampTransaction = async (req: Request, res: Response) => {
   try {
     const transaction = await onrampService.createOnrampTransaction(req.body);
+    console.log(transaction );
     res.status(201).json(transaction);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create onramp transaction' });
