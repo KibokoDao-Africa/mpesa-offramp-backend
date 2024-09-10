@@ -43,13 +43,15 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
 
 // B2C (Business to Customer) Payment
 export const sendB2CPayment = async (mpesaNumber: string, amount: number) => {
+try{
   const token = await getOAuthToken();
 
   const { data: response } = await axios.post(
-    process.env.SAFARICOM_B2C_URL!,
+   "https://sandbox.safaricom.co.ke/mpesa/b2c/v3/paymentrequest" ,
+    // process.env.SAFARICOM_B2C_URL!,
     {
-      InitiatorName: process.env.SAFARICOM_INITIATOR_NAME!,
-      SecurityCredential: process.env.SAFARICOM_SECURITY_CREDENTIAL!,
+      // InitiatorName: process.env.SAFARICOM_INITIATOR_NAME!,
+      // SecurityCredential: process.env.SAFARICOM_SECURITY_CREDENTIAL!,
       CommandID: 'BusinessPayment',
       Amount: amount,
       PartyA: process.env.SAFARICOM_SHORT_CODE!,
@@ -66,6 +68,9 @@ export const sendB2CPayment = async (mpesaNumber: string, amount: number) => {
   );
 
   return response;
+}catch (error){
+  console.log("error from b2c service",error);
+}
 };
 
 // Buy Goods functionality

@@ -3,10 +3,15 @@ import b2cRequestService from '../services/b2cRequestService';
 
 export const createB2CRequest = async (req: Request, res: Response) => {
   try {
+    console.log(req.body);
     const b2cRequest = await b2cRequestService.createB2CRequest(req.body);
     res.status(201).json(b2cRequest);
+    
+
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: 'Failed to create B2C request' });
+    console.log(error);
   }
 };
 

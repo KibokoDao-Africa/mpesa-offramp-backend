@@ -6,5 +6,12 @@ const router = express.Router();
 router.post('/', createB2CRequest);
 router.get('/', getAllB2CRequests);
 
+router.get('/clock',getClock );
 
+
+function getClock(res:any,req:any){
+    res.status(200).json("data")
+    console.log("clock");
+    
+}
 export default router;
