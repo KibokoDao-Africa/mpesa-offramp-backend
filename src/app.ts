@@ -13,4 +13,5 @@ app.use('/api/paybill', routes.paybillRoutes);
 app.use('/api/b2c', routes.b2cRoutes);
 app.use('/api/stkpush', routes.stkPushRoutes);
 
+
 export default app;

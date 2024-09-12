@@ -1,14 +1,16 @@
 import { Sequelize } from 'sequelize';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-const sequelize = new Sequelize('postgresql://postgres:1234@127.0.0.1:5432/postgres', 
+const sequelize = new Sequelize(process.env.DATABASE_URL as string, 
   {
-  dialect: 'postgres',
-  protocol: 'postgres',
-  dialectOptions: {
-    ssl: process.env.DATABASE_SSL === 'true',
-  },
-  logging: false, // You can enable this to see SQL queries in the console
-});
+    dialect: 'postgres',
+    protocol: 'postgres',
+    dialectOptions: {
+      ssl: process.env.DATABASE_SSL === 'true',
+    },
+    logging: false, // You can enable this to see SQL queries in the console
+  }
+);
 
 export default sequelize;
-// host as 127.0.0.1,  port 5432 ,username postgres pasward 1234 database postgres?
