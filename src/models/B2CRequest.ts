@@ -2,6 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import  sequelize  from '../config/database';
 
 class B2CRequest extends Model {
+  [x: string]: any;
   public id!: string;
   public transactionId!: string;
   public requestId!: string;

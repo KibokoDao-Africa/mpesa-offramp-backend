@@ -10,7 +10,7 @@ const createB2CRequest = async (data: any) => {
 
   const b2cRequest = await db.B2CRequest.create({
     transactionId: data.transactionId,
-    // requestId: response.requestId,
+    requestId: response.requestId,
     responseCode: response.responseCode,
     responseDescription: response.responseDescription,
     status: response.responseCode === '0' ? 'completed' : 'pending',

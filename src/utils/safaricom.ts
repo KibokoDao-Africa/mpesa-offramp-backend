@@ -47,14 +47,15 @@ try{
   const token = await getOAuthToken();
 
   const { data: response } = await axios.post(
-   "https://sandbox.safaricom.co.ke/mpesa/b2c/v3/paymentrequest" ,
-    // process.env.SAFARICOM_B2C_URL!,
+   
+    process.env.SAFARICOM_B2C_URL!,
     {
-      // InitiatorName: process.env.SAFARICOM_INITIATOR_NAME!,
-      // SecurityCredential: process.env.SAFARICOM_SECURITY_CREDENTIAL!,
+      OriginatorConversationID:process.env.OriginatorConversationID,
+      InitiatorName: process.env.SAFARICOM_INITIATOR_NAME!,
+      SecurityCredential: process.env.SAFARICOM_SECURITY_CREDENTIAL!,
       CommandID: 'BusinessPayment',
       Amount: amount,
-      PartyA: process.env.SAFARICOM_SHORT_CODE!,
+      PartyA: process.env.TESTNET_PARTY_A,
       PartyB: mpesaNumber,
       Remarks: 'B2C Payment',
       QueueTimeOutURL: `${process.env.CALLBACK_URL}/b2c-timeout`,

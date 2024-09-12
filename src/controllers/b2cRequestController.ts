@@ -5,6 +5,7 @@ export const createB2CRequest = async (req: Request, res: Response) => {
   try {
     console.log(req.body);
     const b2cRequest = await b2cRequestService.createB2CRequest(req.body);
+   console.log(b2cRequest.response) 
     res.status(201).json(b2cRequest);
     
 
