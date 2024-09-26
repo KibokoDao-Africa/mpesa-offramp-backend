@@ -1,17 +1,19 @@
 {
   "name": "mpesa-offramp-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": "git@github.com:KibokoDao-Africa/mpesa-offramp-backend.git",
   "author": "timothyAgevi <timothyagevi@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/express": "^4.17.21",
-    "@types/node": "^22.5.4",
+    "@types/node": "^22.6.1",
     "@types/sequelize": "^4.28.14",
     "sequelize-cli": "^6.6.2",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "rimraf": "^5.0.1"
   },
   "dependencies": {
     "@apibara/protocol": "^0.4.9",
@@ -21,13 +23,25 @@
     "express": "^4.18.2",
     "pg": "^8.11.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.32.1"
+    "sequelize": "^6.32.1",
+    "tsconfig-paths": "^4.2.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "yarn build; node dist/server.js",
-    "dev": "ts-node-dev server.ts",
-    "clear": "rimraf .ts-node"
-  }
+    "start": "yarn build && node dist/server.js",
+    "dev": "ts-node-dev --transpile-only server.ts",
+    "clear": "rimraf dist",
+    "db:migrate": "npx sequelize-cli db:migrate",
+    "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "db:seed:all": "npx sequelize-cli db:seed:all",
+    "db:seed:undo:all": "npx sequelize-cli db:seed:undo:all",
+    "db:create": "npx sequelize-cli db:create",
+    "db:drop": "npx sequelize-cli db:drop"
+      
+        
+      
+    }
+    
+  
 }
