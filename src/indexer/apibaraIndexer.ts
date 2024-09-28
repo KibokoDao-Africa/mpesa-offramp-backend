@@ -2,7 +2,7 @@
 export const config = {
   streamUrl: process.env.APIBARA_ENDPOINT!,
   network: 'starknet',
-  startingBlock: 0,
+  startingBlock: 1,
   finality: 'accepted',
   filter: [
     {
