@@ -30,7 +30,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "yarn build && node dist/server.js",
-    "dev": "ts-node-dev --transpile-only server.ts",
+    "dev": "ts-node-dev --transpile-only --port 3000 server.ts",
     "clear": "rimraf dist",
     "db:migrate": "npx sequelize-cli db:migrate",
     "db:migrate:undo": "npx sequelize-cli db:migrate:undo",
