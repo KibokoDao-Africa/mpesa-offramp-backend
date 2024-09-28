@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import stkPushService from '../services/stkPushService';
+import { createSTKPushRequest as createRequest, getAllSTKPushRequests as getAllRequests } from '../services/stkPushService';
 
 export const createSTKPushRequest = async (req: Request, res: Response) => {
   try {
-    const stkPushRequest = await stkPushService.createSTKPushRequest(req.body);
+    const stkPushRequest = await createRequest(req.body);
     res.status(201).json(stkPushRequest);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create STK Push request' });
@@ -12,7 +12,7 @@ export const createSTKPushRequest = async (req: Request, res: Response) => {
 
 export const getAllSTKPushRequests = async (req: Request, res: Response) => {
   try {
-    const stkPushRequests = await stkPushService.getAllSTKPushRequests();
+    const stkPushRequests = await getAllRequests();
     res.status(200).json(stkPushRequests);
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve STK Push requests' });

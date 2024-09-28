@@ -2,6 +2,9 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
 class OnrampTransaction extends Model {
+  response(response: any) {
+    throw new Error('Method not implemented.');
+  }
   public id!: string;
   public phoneNumber!: string;
   public amount!: number;

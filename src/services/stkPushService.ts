@@ -1,8 +1,8 @@
 import db from '../models';
 import { performSTKPush } from '../utils/safaricom';
-import onrampService from './onrampService';
+import { updateStatus } from './onrampService';
 
-const createSTKPushRequest = async (data: any) => {
+export const createSTKPushRequest = async (data: any) => {
   const response = await performSTKPush(data.phoneNumber, data.amount);
 
   const stkPushRequest = await db.STKPushRequest.create({
@@ -14,15 +14,13 @@ const createSTKPushRequest = async (data: any) => {
   });
 
   if (response.ResponseCode === '0') {
-    await onrampService.updateStatus(data.transactionId, 'unprocessed');
+    await updateStatus(data.transactionId, 'unprocessed');
   }
 
   return stkPushRequest;
 };
 
-const getAllSTKPushRequests = async () => {
+export const getAllSTKPushRequests = async () => {
   const stkPushRequests = await db.STKPushRequest.findAll();
   return stkPushRequests;
 };
-
-export default { createSTKPushRequest, getAllSTKPushRequests };

@@ -1,7 +1,7 @@
 import db from '../models';
 import { performSTKPush } from '../utils/safaricom';
 
-const createOnrampTransaction = async (data: any) => {
+export const createOnrampTransaction = async (data: any) => {
   const transaction = await db.OnrampTransaction.create(data);
   const response = await performSTKPush(transaction.phoneNumber, transaction.amount);
 
@@ -21,7 +21,7 @@ const createOnrampTransaction = async (data: any) => {
   return transaction;
 };
 
-const handleOnchainTransaction = async (data: any) => {
+export const handleOnchainTransaction = async (data: any) => {
   await db.OnrampOnchainTransaction.create(data);
 
   const transaction = await db.OnrampTransaction.findByPk(data.transactionId);
@@ -31,7 +31,7 @@ const handleOnchainTransaction = async (data: any) => {
   }
 };
 
-const updateStatus = async (transactionId: string, status: 'initiated' | 'unprocessed' | 'completed') => {
+export const updateStatus = async (transactionId: string, status: 'initiated' | 'unprocessed' | 'completed') => {
   const transaction = await db.OnrampTransaction.findByPk(transactionId);
   if (!transaction) {
     throw new Error('Transaction not found');
@@ -40,8 +40,6 @@ const updateStatus = async (transactionId: string, status: 'initiated' | 'unproc
   await transaction.save();
   return transaction;
 };
-
-export default { createOnrampTransaction, handleOnchainTransaction, updateStatus };
 
 function callOnrampSmartContract(id: string) {
   throw new Error('Function not implemented.');
