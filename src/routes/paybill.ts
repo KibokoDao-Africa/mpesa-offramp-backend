@@ -1,9 +1,9 @@
 import express from 'express';
-import { createPaybillTransaction, updatePaybillTransactionStatus } from '../controllers/paybillController';
+import { createPaybillTransactionHandler, updatePaybillTransactionStatusHandler } from '../controllers/paybillController';
 
 const router = express.Router();
 
-router.post('/', createPaybillTransaction);
-router.put('/status', updatePaybillTransactionStatus);
+router.post('/', createPaybillTransactionHandler);
+router.put('/status', updatePaybillTransactionStatusHandler);
 
 export default router;

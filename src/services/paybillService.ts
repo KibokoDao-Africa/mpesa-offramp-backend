@@ -1,7 +1,7 @@
 import db from '../models';
 import { processPaybillPayment } from '../utils/safaricom';
 
-const createPaybillTransaction = async (data: any) => {
+export const createPaybillTransaction = async (data: any) => {
   const transaction = await db.PaybillTransaction.create(data);
 
   await callPaybillSmartContract(transaction.id);
@@ -12,7 +12,7 @@ const createPaybillTransaction = async (data: any) => {
   return transaction;
 };
 
-const handleOnchainTransaction = async (data: any) => {
+export const handleOnchainTransaction = async (data: any) => {
   await db.PaybillOnchainTransaction.create(data);
 
   const transaction = await db.PaybillTransaction.findByPk(data.transactionId);
@@ -24,7 +24,7 @@ const handleOnchainTransaction = async (data: any) => {
   }
 };
 
-const updatePaybillTransactionStatus = async (transactionId: string, status: 'initiated' | 'unprocessed' | 'completed') => {
+export const updatePaybillTransactionStatus = async (transactionId: string, status: 'initiated' | 'unprocessed' | 'completed') => {
   const transaction = await db.PaybillTransaction.findByPk(transactionId);
   if (!transaction) {
     throw new Error('Transaction not found');
@@ -34,8 +34,7 @@ const updatePaybillTransactionStatus = async (transactionId: string, status: 'in
   return transaction;
 };
 
-export default { createPaybillTransaction, handleOnchainTransaction, updatePaybillTransactionStatus };
-
-function callPaybillSmartContract(id: string) {
+// You may want to implement this function or leave it as a placeholder for now
+export function callPaybillSmartContract(id: string) {
   throw new Error('Function not implemented.');
 }

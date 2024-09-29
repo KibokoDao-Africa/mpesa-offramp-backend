@@ -1,9 +1,9 @@
 import express from 'express';
-import { createBuyGoodsTransaction, updateBuyGoodsTransactionStatus } from '../controllers/buyGoodsController';
+import { createBuyGoodsTransactionHandler, updateBuyGoodsTransactionStatusHandler } from '../controllers/buyGoodsController';
 
 const router = express.Router();
 
-router.post('/', createBuyGoodsTransaction);
-router.put('/status', updateBuyGoodsTransactionStatus);
+router.post('/', createBuyGoodsTransactionHandler);
+router.put('/status', updateBuyGoodsTransactionStatusHandler);
 
 export default router;

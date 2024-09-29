@@ -2,18 +2,20 @@ import axios from 'axios';
 
 // Utility to obtain OAuth token for Safaricom Daraja API
 const getOAuthToken = async () => {
+  console.log("Requesting OAuth token");
   const { data: oauthData } = await axios.get(process.env.SAFARICOM_OAUTH_URL!, {
     auth: {
       username: process.env.SAFARICOM_CONSUMER_KEY!,
       password: process.env.SAFARICOM_CONSUMER_SECRET!,
     },
   });
-
+  console.log("Received OAuth token:", oauthData.access_token);
   return oauthData.access_token;
 };
 
 // STK Push functionality
 export const performSTKPush = async (phoneNumber: string, amount: number) => {
+  console.log("Performing STK Push:", { phoneNumber, amount });
   const token = await getOAuthToken();
 
   const { data: response } = await axios.post(
@@ -37,45 +39,48 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
       },
     }
   );
-
+  
+  console.log("STK Push response:", response);
   return response;
 };
 
 // B2C (Business to Customer) Payment
 export const sendB2CPayment = async (mpesaNumber: string, amount: number) => {
-try{
-  const token = await getOAuthToken();
+  try {
+    console.log("Sending B2C payment:", { mpesaNumber, amount });
+    const token = await getOAuthToken();
 
-  const { data: response } = await axios.post(
-   
-    process.env.SAFARICOM_B2C_URL!,
-    {
-      OriginatorConversationID:process.env.OriginatorConversationID,
-      InitiatorName: process.env.SAFARICOM_INITIATOR_NAME!,
-      SecurityCredential: process.env.SAFARICOM_SECURITY_CREDENTIAL!,
-      CommandID: 'BusinessPayment',
-      Amount: amount,
-      PartyA: process.env.TESTNET_PARTY_A,
-      PartyB: mpesaNumber,
-      Remarks: 'B2C Payment',
-      QueueTimeOutURL: `${process.env.CALLBACK_URL}/b2c-timeout`,
-      ResultURL: `${process.env.CALLBACK_URL}/b2c-result`,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const { data: response } = await axios.post(
+      process.env.SAFARICOM_B2C_URL!,
+      {
+        OriginatorConversationID: process.env.OriginatorConversationID,
+        InitiatorName: process.env.SAFARICOM_INITIATOR_NAME!,
+        SecurityCredential: process.env.SAFARICOM_SECURITY_CREDENTIAL!,
+        CommandID: 'BusinessPayment',
+        Amount: amount,
+        PartyA: process.env.TESTNET_PARTY_A,
+        PartyB: mpesaNumber,
+        Remarks: 'B2C Payment',
+        QueueTimeOutURL: `${process.env.CALLBACK_URL}/b2c-timeout`,
+        ResultURL: `${process.env.CALLBACK_URL}/b2c-result`,
       },
-    }
-  );
-
-  return response;
-}catch (error){
-  console.log("error from b2c service",error);
-}
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    
+    console.log("B2C Payment response:", response);
+    return response;
+  } catch (error) {
+    console.log("Error from B2C service:", error);
+  }
 };
 
 // Buy Goods functionality
 export const processBuyGoodsPayment = async (tillNumber: string, amount: number) => {
+  console.log("Processing Buy Goods Payment:", { tillNumber, amount });
   const token = await getOAuthToken();
 
   const { data: response } = await axios.post(
@@ -95,12 +100,14 @@ export const processBuyGoodsPayment = async (tillNumber: string, amount: number)
       },
     }
   );
-
+  
+  console.log("Buy Goods Payment response:", response);
   return response;
 };
 
 // Paybill Payment
 export const processPaybillPayment = async (paybillNumber: string, amount: number, accountNumber: string) => {
+  console.log("Processing Paybill Payment:", { paybillNumber, amount, accountNumber });
   const token = await getOAuthToken();
 
   const { data: response } = await axios.post(
@@ -120,6 +127,7 @@ export const processPaybillPayment = async (paybillNumber: string, amount: numbe
       },
     }
   );
-
+  
+  console.log("Paybill Payment response:", response);
   return response;
 };

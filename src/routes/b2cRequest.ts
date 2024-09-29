@@ -1,17 +1,16 @@
 import express from 'express';
-import { createB2CRequest, getAllB2CRequests } from '../controllers/b2cRequestController';
+import { createB2CRequestHandler, getAllB2CRequestsHandler } from '../controllers/b2cRequestController';
 
 const router = express.Router();
 
-router.post('/', createB2CRequest);
-router.get('/', getAllB2CRequests);
+router.post('/', createB2CRequestHandler);
+router.get('/', getAllB2CRequestsHandler);
 
-router.get('/clock',getClock );
+router.get('/clock', getClock);
 
-
-function getClock(res:any,req:any){
-    res.status(200).json("data")
+function getClock(req: express.Request, res: express.Response) {
+    res.status(200).json("data");
     console.log("clock");
-    
 }
+
 export default router;

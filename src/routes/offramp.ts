@@ -1,9 +1,9 @@
 import express from 'express';
-import { createOfframpTransaction, updateOfframpTransactionStatus } from '../controllers/offrampController';
+import { createOfframpTransactionHandler, updateOfframpTransactionStatusHandler } from '../controllers/offrampController';
 
 const router = express.Router();
 
-router.post('/', createOfframpTransaction);
-router.put('/status', updateOfframpTransactionStatus);
+router.post('/', createOfframpTransactionHandler);
+router.put('/status', updateOfframpTransactionStatusHandler);
 
 export default router;

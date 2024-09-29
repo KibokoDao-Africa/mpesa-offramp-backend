@@ -1,35 +1,41 @@
 import db from '../models';
-import b2cRequestService from './b2cRequestService';
+import { createB2CRequest } from './b2cRequestService';
 
-const createOfframpTransaction = async (data: any) => {
+export const createOfframpTransaction = async (data: any) => {
+  console.log("Creating Offramp Transaction:", data);
   const transaction = await db.OfframpTransaction.create(data);
+  console.log("Created Offramp Transaction:", transaction);
   return transaction;
 };
 
-const getAllOfframpTransactions = async () => {
+export const getAllOfframpTransactions = async () => {
+  console.log("Fetching all Offramp Transactions");
   const transactions = await db.OfframpTransaction.findAll();
+  console.log("Fetched Offramp Transactions:", transactions);
   return transactions;
 };
 
-const updateOfframpTransactionStatus = async (id: string, status: 'initiated' | 'unprocessed' | 'completed') => {
+export const updateOfframpTransactionStatus = async (id: string, status: 'initiated' | 'unprocessed' | 'completed') => {
+  console.log(`Updating Offramp Transaction Status: ID=${id}, Status=${status}`);
   const transaction = await db.OfframpTransaction.findByPk(id);
   if (transaction) {
     transaction.status = status;
     await transaction.save();
+    console.log("Updated Offramp Transaction Status:", transaction);
   }
   return transaction;
 };
 
-const handleOnchainTransaction = async (data: any) => {
+export const handleOnchainTransaction = async (data: any) => {
+  console.log("Handling On-chain Offramp Transaction:", data);
   const onchainTransaction = await db.OfframpOnchainTransaction.create(data);
+  console.log("Created On-chain Offramp Transaction:", onchainTransaction);
 
-  // Update the related transaction's status to "unprocessed"
   await updateOfframpTransactionStatus(onchainTransaction.transactionId, 'unprocessed');
 
-  // Trigger the B2C request service to send money
   const transaction = await db.OfframpTransaction.findByPk(onchainTransaction.transactionId);
   if (transaction) {
-    await b2cRequestService.createB2CRequest({
+    await createB2CRequest({
       transactionId: transaction.id,
       mpesaNumber: transaction.mpesaNumber,
       amount: transaction.amount,
@@ -38,7 +44,3 @@ const handleOnchainTransaction = async (data: any) => {
 
   return onchainTransaction;
 };
-
-
-
-export default { createOfframpTransaction, getAllOfframpTransactions, updateOfframpTransactionStatus, handleOnchainTransaction };

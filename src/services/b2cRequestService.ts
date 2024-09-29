@@ -1,12 +1,12 @@
 import db from '../models';
 import { sendB2CPayment } from '../utils/safaricom';
-import offrampService from './offrampService';
+import { updateOfframpTransactionStatus } from './offrampService';
 
-const createB2CRequest = async (data: any) => {
-  console.log("Service Request");
+export const createB2CRequest = async (data: any) => {
+  console.log("Received Service Request:", data);
   
   const response = await sendB2CPayment(data.mpesaNumber, data.amount);
-  console.log(data.mpesaNumber, data.amount);
+  console.log("Received B2C Payment Response:", response);
 
   const b2cRequest = await db.B2CRequest.create({
     transactionId: data.transactionId,
@@ -15,19 +15,22 @@ const createB2CRequest = async (data: any) => {
     responseDescription: response.responseDescription,
     status: response.responseCode === '0' ? 'completed' : 'pending',
   });
+  console.log("B2C Request Created:", b2cRequest);
 
   if (response.responseCode === '0') {
-    console.log("b2c doing")
-    await offrampService.updateOfframpTransactionStatus(data.transactionId, 'completed');
-   
+    console.log("Initiating Update of Offramp Transaction Status");
+    await updateOfframpTransactionStatus(data.transactionId, 'completed');
+    console.log("Offramp Transaction Status Updated to 'completed'");
+  } else {
+    console.log("B2C Payment Response Code not '0', skipping Offramp Transaction Status update");
   }
 
   return b2cRequest;
 };
 
-const getAllB2CRequests = async () => {
+export const getAllB2CRequests = async () => {
+  console.log("Fetching All B2C Requests");
   const b2cRequests = await db.B2CRequest.findAll();
+  console.log("All B2C Requests Fetched:", b2cRequests);
   return b2cRequests;
 };
-
-export default { createB2CRequest, getAllB2CRequests };
