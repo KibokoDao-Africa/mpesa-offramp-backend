@@ -8,8 +8,8 @@ class OnrampTransaction extends Model {
   public id!: string;
   public phoneNumber!: string;
   public amount!: number;
-  public crypto!: string; // New field for cryptocurrency name
-  public noOfTokens!: number; // New field for the number of tokens
+  public crypto!: string;
+  public noOfTokens!: number;
   public status!: 'initiated' | 'unprocessed' | 'completed';
 }
 

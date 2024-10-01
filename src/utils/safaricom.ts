@@ -14,16 +14,27 @@ const getOAuthToken = async () => {
 };
 
 // STK Push functionality
+
+const generatePassword = (shortcode: string, passkey: string, timestamp: string): string => {
+  const dataToEncode = `${shortcode}${passkey}${timestamp}`;
+  const encodedPassword = Buffer.from(dataToEncode).toString('base64');
+  return encodedPassword;
+};
+
+
 export const performSTKPush = async (phoneNumber: string, amount: number) => {
   console.log("Performing STK Push:", { phoneNumber, amount });
   const token = await getOAuthToken();
-
+ let timestamp=new Date().toISOString();
+ let shortcode=process.env.SAFARICOM_SHORT_CODE!;
+ let passkey=process.env.SAFARICOM_PASSKEY!;
   const { data: response } = await axios.post(
     process.env.SAFARICOM_STK_PUSH_URL!,
     {
       BusinessShortCode: process.env.SAFARICOM_SHORT_CODE!,
-      Password: process.env.SAFARICOM_PASSWORD!,
-      Timestamp: new Date().toISOString(),
+      Timestamp:timestamp ,
+      Shortcode:shortcode,
+      Password: generatePassword(shortcode, passkey, timestamp),
       TransactionType: 'CustomerPayBillOnline',
       Amount: amount,
       PartyA: phoneNumber,

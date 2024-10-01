@@ -1,7 +1,11 @@
 import express from 'express';
 import routes from './routes';
+import cors from 'cors';
 
 const app = express();
+
+// Enable CORS for all requests
+app.use(cors());
 
 // Use the built-in JSON middleware
 app.use(express.json());
@@ -10,6 +14,7 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Server running');
 });
+
 
 // Use the routes
 app.use('/api/onramp', routes.onrampRoutes);
