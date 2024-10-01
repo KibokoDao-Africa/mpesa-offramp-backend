@@ -1,5 +1,19 @@
 import axios from 'axios';
 
+
+//util helpers
+// Function to generate a timestamp (format: YYYYMMDDHHmmss)
+const generateTimestamp = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  return `${year}${month}${day}${hours}${minutes}${seconds}`;
+};
+
 // Utility to obtain OAuth token for Safaricom Daraja API
 const getOAuthToken = async () => {
   console.log("Requesting OAuth token");
@@ -25,7 +39,7 @@ const generatePassword = (shortcode: string, passkey: string, timestamp: string)
 export const performSTKPush = async (phoneNumber: string, amount: number) => {
   console.log("Performing STK Push:", { phoneNumber, amount });
   const token = await getOAuthToken();
- let timestamp=new Date().toISOString();
+ let timestamp= generateTimestamp ();
  let shortcode=process.env.SAFARICOM_SHORT_CODE!;
  let passkey=process.env.SAFARICOM_PASSKEY!;
   const { data: response } = await axios.post(
