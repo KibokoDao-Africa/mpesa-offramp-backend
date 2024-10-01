@@ -54,7 +54,7 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
       PartyA: phoneNumber,
       PartyB: process.env.SAFARICOM_SHORT_CODE!,
       PhoneNumber: phoneNumber,
-      CallBackURL: `${process.env.CALLBACK_URL}/stk-push-callback`,
+      CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush`,
       AccountReference: 'Onramp',
       TransactionDesc: 'Onramp Payment',
     },
