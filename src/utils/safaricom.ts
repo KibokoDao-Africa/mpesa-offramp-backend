@@ -16,15 +16,20 @@ const generateTimestamp = () => {
 
 // Utility to obtain OAuth token for Safaricom Daraja API
 const getOAuthToken = async () => {
-  console.log("Requesting OAuth token");
-  const { data: oauthData } = await axios.get(process.env.SAFARICOM_OAUTH_URL!, {
-    auth: {
-      username: process.env.SAFARICOM_CONSUMER_KEY!,
-      password: process.env.SAFARICOM_CONSUMER_SECRET!,
-    },
-  });
-  console.log("Received OAuth token:", oauthData.access_token);
-  return oauthData.access_token;
+    try{
+
+      const { data: oauthData } = await axios.get(process.env.SAFARICOM_OAUTH_URL!, {
+        auth: {
+          username: process.env.SAFARICOM_CONSUMER_KEY!,
+          password: process.env.SAFARICOM_CONSUMER_SECRET!,
+        },
+      });
+      console.log("Received OAuth token:", oauthData.access_token);
+      return oauthData.access_token;
+    } catch(error){
+      console.log(error, "&&*&*&")
+    }
+
 };
 
 // STK Push functionality
@@ -38,35 +43,39 @@ const generatePassword = (shortcode: string, passkey: string, timestamp: string)
 
 export const performSTKPush = async (phoneNumber: string, amount: number) => {
   console.log("Performing STK Push:", { phoneNumber, amount });
-  const token = await getOAuthToken();
- let timestamp= generateTimestamp ();
- let shortcode=process.env.SAFARICOM_SHORT_CODE!;
- let passkey=process.env.SAFARICOM_PASSKEY!;
-  const { data: response } = await axios.post(
-    process.env.SAFARICOM_STK_PUSH_URL!,
-    {
-      BusinessShortCode: process.env.SAFARICOM_SHORT_CODE!,
-      Timestamp:timestamp ,
-      Shortcode:shortcode,
-      Password: generatePassword(shortcode, passkey, timestamp),
-      TransactionType: 'CustomerPayBillOnline',
-      Amount: amount,
-      PartyA: phoneNumber,
-      PartyB: process.env.SAFARICOM_SHORT_CODE!,
-      PhoneNumber: phoneNumber,
-      CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush`,
-      AccountReference: 'Onramp',
-      TransactionDesc: 'Onramp Payment',
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  
-  console.log("STK Push response:", response);
-  return response;
+  try{
+    const token = await getOAuthToken();
+    let timestamp= generateTimestamp ();
+    let shortcode=process.env.SAFARICOM_SHORT_CODE!;
+    let passkey=process.env.SAFARICOM_PASSKEY!;
+     const { data: response } = await axios.post(
+       process.env.SAFARICOM_STK_PUSH_URL!,
+       {
+         BusinessShortCode: process.env.SAFARICOM_SHORT_CODE!,
+         Timestamp:timestamp ,
+         Shortcode:shortcode,
+         Password: generatePassword(shortcode, passkey, timestamp),
+         TransactionType: 'CustomerPayBillOnline',
+         Amount: amount,
+         PartyA: phoneNumber,
+         PartyB: process.env.SAFARICOM_SHORT_CODE!,
+         PhoneNumber: phoneNumber,
+         CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush`,
+         AccountReference: 'Onramp',
+         TransactionDesc: 'Onramp Payment',
+       },
+       {
+         headers: {
+           Authorization: `Bearer ${token}`,
+         },
+       }
+     );
+     
+     console.log("STK Push response:", response);
+     return response;
+  } catch(error){
+    console.log("&*&*&",error)
+  }
 };
 
 // B2C (Business to Customer) Payment
