@@ -3,17 +3,23 @@ import { createSTKPushRequest as createRequest, getAllSTKPushRequests as getAllR
 
 export const createSTKPushRequest = async (req: Request, res: Response) => {
   try {
-    const { Amount, PartyA, PhoneNumber } = req.body;
+    const { Amount, PhoneNumber } = req.body;
 
     // Ensure that Amount is a number and greater than or equal to 1
     if (isNaN(Amount) || Amount < 1) {
       return res.status(400).json({ error: 'Invalid Amount: Amount should be a number and at least 1.' });
     }
+     // Ensure that PhoneNumber is valid
+  const phoneRegex = /^2547\d{8}$/;  // Regular expression to match Kenyan phone numbers in international format (2547XXXXXXXX)
+  if (!PhoneNumber || !phoneRegex.test(PhoneNumber)) {
+    return res.status(400).json({ error: 'Invalid PhoneNumber: PhoneNumber should be in the format 2547XXXXXXXX.' });
+  }
+
 
     console.log("Received request to create STK Push:", req.body);
-    const stkPushRequest = await createRequest({ Amount, PartyA, PhoneNumber });
-    console.log("Successfully created STK Push Request:", stkPushRequest);
-    res.status(201).json(stkPushRequest);
+    // const stkPushRequest = await createRequest({ Amount, PhoneNumber });
+    // console.log("Successfully created STK Push Request:", stkPushRequest);
+    // res.status(201).json(stkPushRequest);
   } catch (error) {
     // Handle the error more robustly, checking for known error types
     if (error instanceof Error) {
