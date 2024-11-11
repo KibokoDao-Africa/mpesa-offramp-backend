@@ -26,6 +26,13 @@ OnrampTransaction.init({
   amount: {
     type: DataTypes.DECIMAL(18, 8),
     allowNull: false,
+    get() {
+      const value = this.getDataValue('amount');
+      return value ? parseFloat(value) : 0;
+    },
+    set(value: number) {
+      this.setDataValue('amount', value.toFixed(8)); // Store with precision
+    }
   },
   crypto: {
     type: DataTypes.STRING,
@@ -34,6 +41,13 @@ OnrampTransaction.init({
   noOfTokens: {
     type: DataTypes.DECIMAL(18, 8),
     allowNull: false,
+    get() {
+      const value = this.getDataValue('noOfTokens');
+      return value ? parseFloat(value) : 0;
+    },
+    set(value: number) {
+      this.setDataValue('noOfTokens', value.toFixed(8)); // Store with precision
+    }
   },
   status: {
     type: DataTypes.ENUM('initiated', 'unprocessed', 'completed'),
@@ -41,5 +55,6 @@ OnrampTransaction.init({
     allowNull: false,
   },
 }, { sequelize, modelName: 'OnrampTransaction' });
+
 
 export default OnrampTransaction;

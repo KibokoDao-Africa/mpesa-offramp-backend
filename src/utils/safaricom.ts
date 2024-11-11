@@ -37,20 +37,25 @@ const generatePassword = (shortcode: string, passkey: string, timestamp: string)
 
 
 export const performSTKPush = async (phoneNumber: string, amount: number) => {
-  console.log("Performing STK Push:", { phoneNumber, amount });
+  // Ensure the amount is treated as a floating-point number
+  const formattedAmount = parseFloat(amount.toFixed(2));
+
+  console.log("Performing STK Push:", { phoneNumber, formattedAmount });
+
   const token = await getOAuthToken();
- let timestamp= generateTimestamp ();
- let shortcode=process.env.SAFARICOM_SHORT_CODE!;
- let passkey=process.env.SAFARICOM_PASSKEY!;
+  let timestamp = generateTimestamp();
+  let shortcode = process.env.SAFARICOM_SHORT_CODE!;
+  let passkey = process.env.SAFARICOM_PASSKEY!;
+
   const { data: response } = await axios.post(
     process.env.SAFARICOM_STK_PUSH_URL!,
     {
       BusinessShortCode: process.env.SAFARICOM_SHORT_CODE!,
-      Timestamp:timestamp ,
-      Shortcode:shortcode,
+      Timestamp: timestamp,
+      Shortcode: shortcode,
       Password: generatePassword(shortcode, passkey, timestamp),
       TransactionType: 'CustomerPayBillOnline',
-      Amount: amount,
+      Amount: formattedAmount,
       PartyA: phoneNumber,
       PartyB: process.env.SAFARICOM_SHORT_CODE!,
       PhoneNumber: phoneNumber,
@@ -64,10 +69,11 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
       },
     }
   );
-  
+
   console.log("STK Push response:", response);
   return response;
 };
+
 
 // B2C (Business to Customer) Payment
 export const sendB2CPayment = async (mpesaNumber: string, amount: number) => {
