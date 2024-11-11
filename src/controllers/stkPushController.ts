@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { createSTKPushRequest as createRequest, getAllSTKPushRequests as getAllRequests } from '../services/stkPushService';
 
 export const createSTKPushRequest = async (req: Request, res: Response) => {
-  try {
+  // try {
     const { Amount, PhoneNumber } = req.body;
 
     // Ensure that Amount is a number and greater than or equal to 1
@@ -20,16 +20,16 @@ export const createSTKPushRequest = async (req: Request, res: Response) => {
     // const stkPushRequest = await createRequest({ Amount, PhoneNumber });
     // console.log("Successfully created STK Push Request:", stkPushRequest);
     // res.status(201).json(stkPushRequest);
-  } catch (error) {
-    // Handle the error more robustly, checking for known error types
-    if (error instanceof Error) {
-      console.error("Error creating STK Push request:", error.message);
-      res.status(500).json({ error: 'Failed to create STK Push request', details: error.message });
-    } else {
-      console.error("Unknown error:", error);
-      res.status(500).json({ error: 'An unknown error occurred' });
-    }
-  }
+  // } catch (error) {
+  //   // Handle the error more robustly, checking for known error types
+  //   if (error instanceof Error) {
+  //     console.error("Error creating STK Push request:", error.message);
+  //     res.status(500).json({ error: 'Failed to create STK Push request', details: error.message });
+  //   } else {
+  //     console.error("Unknown error:", error);
+  //     res.status(500).json({ error: 'An unknown error occurred' });
+  //   }
+  // }
 };
 
 export const getAllSTKPushRequests = async (req: Request, res: Response) => {
