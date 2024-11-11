@@ -37,29 +37,26 @@ const generatePassword = (shortcode: string, passkey: string, timestamp: string)
 
 
 export const performSTKPush = async (phoneNumber: string, amount: number) => {
-  // Ensure the amount is treated as a floating-point number
   const formattedAmount = parseFloat(amount.toFixed(2));
-
   console.log("Performing STK Push:", { phoneNumber, formattedAmount });
 
   const token = await getOAuthToken();
-  let timestamp = generateTimestamp();
-  let shortcode = process.env.SAFARICOM_SHORT_CODE!;
-  let passkey = process.env.SAFARICOM_PASSKEY!;
+  const timestamp = generateTimestamp();
+  const shortcode = process.env.SAFARICOM_SHORT_CODE!;
+  const passkey = process.env.SAFARICOM_PASSKEY!;
 
   const { data: response } = await axios.post(
     process.env.SAFARICOM_STK_PUSH_URL!,
     {
-      BusinessShortCode: process.env.SAFARICOM_SHORT_CODE!,
+      BusinessShortCode: shortcode,
       Timestamp: timestamp,
-      Shortcode: shortcode,
       Password: generatePassword(shortcode, passkey, timestamp),
       TransactionType: 'CustomerPayBillOnline',
       Amount: formattedAmount,
       PartyA: phoneNumber,
-      PartyB: process.env.SAFARICOM_SHORT_CODE!,
+      PartyB: shortcode,
       PhoneNumber: phoneNumber,
-      CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush`,
+      CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush/callback`,
       AccountReference: 'Onramp',
       TransactionDesc: 'Onramp Payment',
     },

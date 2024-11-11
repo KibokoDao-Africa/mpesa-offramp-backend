@@ -2,32 +2,51 @@ import db from '../models';
 import { performSTKPush } from '../utils/safaricom';
 import { updateStatus } from './onrampService';
 
-export const createSTKPushRequest = async (data: any) => {
-  console.log("Creating STK Push Request with data:", data);
-  
-  const response = await performSTKPush(data.phoneNumber, data.amount);
-  console.log("STK Push Response:", response);
+interface STKPushRequestData {
+  phoneNumber: string;
+  amount: number;
+  transactionId: string;
+}
 
-  const stkPushRequest = await db.STKPushRequest.create({
-    transactionId: data.transactionId,
-    requestId: response.ConversationID,
-    responseCode: response.ResponseCode,
-    responseDescription: response.ResponseDescription,
-    status: response.ResponseCode === '0' ? 'completed' : 'pending',
-  });
-  console.log("STK Push Request Created:", stkPushRequest);
+// Service to create an STK Push request
+export const createSTKPushRequest = async (data: STKPushRequestData) => {
+  try {
+    console.log("Creating STK Push Request with data:", data);
 
-  if (response.ResponseCode === '0') {
-    console.log(`Updating status for transaction ID ${data.transactionId} to 'unprocessed'`);
-    await updateStatus(data.transactionId, 'unprocessed');
+    // Perform the STK Push request
+    const response = await performSTKPush(data.phoneNumber, data.amount);
+    console.log("STK Push Response:", response);
+
+    // Create an STK Push request record in the database
+    const stkPushRequest = await db.STKPushRequest.create({
+      transactionId: data.transactionId,
+      requestId: response.ConversationID,
+      status: response.ResponseCode === '0' ? 'completed' : 'pending',
+    });
+
+    console.log("STK Push Request Created:", stkPushRequest);
+
+    // Update the status of the associated transaction
+    if (response.ResponseCode === '0') {
+      await updateStatus(data.transactionId, 'unprocessed');
+    }
+
+    return stkPushRequest;
+  } catch (error) {
+    console.error("Error creating STK Push request:", error);
+    throw error;
   }
-
-  return stkPushRequest;
 };
 
+// Service to get all STK Push requests
 export const getAllSTKPushRequests = async () => {
-  console.log("Fetching all STK Push Requests");
-  const stkPushRequests = await db.STKPushRequest.findAll();
-  console.log("Fetched STK Push Requests:", stkPushRequests);
-  return stkPushRequests;
+  try {
+    console.log("Fetching all STK Push Requests");
+    const stkPushRequests = await db.STKPushRequest.findAll();
+    console.log("Fetched STK Push Requests:", stkPushRequests);
+    return stkPushRequests;
+  } catch (error) {
+    console.error("Error fetching STK Push Requests:", error);
+    throw error;
+  }
 };

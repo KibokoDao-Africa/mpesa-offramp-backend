@@ -1,27 +1,49 @@
 import db from '../models';
 import { performSTKPush } from '../utils/safaricom';
+import { Model } from 'sequelize';
 
-export const createOnrampTransaction = async (data: any) => {
+// Define the TransactionData interface to match the OnrampTransaction model
+interface TransactionData {
+  phoneNumber: string;
+  amount: number;
+  crypto: string;
+  noOfTokens: number;
+  status?: 'initiated' | 'unprocessed' | 'completed';
+}
+
+// Service to create a new onramp transaction and trigger STK Push
+export const createOnrampTransaction = async (data: TransactionData) => {
   try {
     console.log("Creating onramp transaction with data:", data);
-    const transaction = await db.OnrampTransaction.create(data);
+
+    // Ensure that the data object matches the OnrampTransaction model
+    const transaction = await db.OnrampTransaction.create({
+      phoneNumber: data.phoneNumber,
+      amount: data.amount,
+      crypto: data.crypto,
+      noOfTokens: data.noOfTokens,
+      status: data.status || 'initiated',
+    });
+
     console.log("Onramp transaction created:", transaction);
 
+    // Trigger STK Push immediately after transaction creation
     const response = await performSTKPush(transaction.phoneNumber, transaction.amount);
     console.log("STK Push response:", response);
 
-    if (response.statusCode === 200) {
+    if (response.ResponseCode === '0') {
+      // Update transaction status to 'unprocessed'
+      transaction.status = 'unprocessed';
+      await transaction.save();
+
+      // Create a record for the STK Push request in the database
       await db.STKPushRequest.create({
         transactionId: transaction.id,
-        requestId: response.data.requestId,
+        requestId: response.ConversationID,
         status: 'pending',
       });
 
-      transaction.status = 'unprocessed';
-      await transaction.save();
-      console.log("Onramp transaction updated to unprocessed:", transaction);
-
-      await callOnrampSmartContract(transaction.id);
+      console.log("STK Push Request created and transaction status updated.");
     }
 
     return transaction;
@@ -31,32 +53,23 @@ export const createOnrampTransaction = async (data: any) => {
   }
 };
 
-export const handleOnchainTransaction = async (data: any) => {
-  try {
-    console.log("Handling on-chain transaction:", data);
-    await db.OnrampOnchainTransaction.create(data);
-
-    const transaction = await db.OnrampTransaction.findByPk(data.transactionId);
-    if (transaction) {
-      transaction.status = 'completed';
-      await transaction.save();
-      console.log("Onramp transaction marked as completed:", transaction);
-    }
-  } catch (error) {
-    console.error("Error handling on-chain transaction:", error);
-    throw error;
-  }
-};
-
+// Service to update the status of an existing onramp transaction
 export const updateStatus = async (transactionId: string, status: 'initiated' | 'unprocessed' | 'completed') => {
   try {
     console.log(`Updating onramp transaction status: ID=${transactionId}, Status=${status}`);
+
+    // Fetch the transaction by ID
     const transaction = await db.OnrampTransaction.findByPk(transactionId);
+
+    // Check if the transaction exists
     if (!transaction) {
       throw new Error(`Transaction with ID=${transactionId} not found`);
     }
+
+    // Update the status
     transaction.status = status;
     await transaction.save();
+
     console.log("Onramp transaction status updated:", transaction);
     return transaction;
   } catch (error) {
@@ -64,8 +77,3 @@ export const updateStatus = async (transactionId: string, status: 'initiated' | 
     throw error;
   }
 };
-
-function callOnrampSmartContract(id: string) {
-  console.log(`Calling smart contract for onramp transaction: ID=${id}`);
-  throw new Error('Function not implemented.');
-}
