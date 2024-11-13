@@ -4,7 +4,7 @@ import sequelize from '../config/database';
 class STKPushRequest extends Model {
   public id!: string;
   public transactionId!: string;
-  public requestId!: string;
+  // public requestId!: string;
   public status!: 'pending' | 'completed';
 }
 
@@ -18,10 +18,10 @@ STKPushRequest.init({
     type: DataTypes.UUID,
     allowNull: false,
   },
-  requestId: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
+  // requestId: {
+  //   type: DataTypes.STRING,
+  //   allowNull: false,
+  // },
   status: {
     type: DataTypes.ENUM('pending', 'completed'),
     defaultValue: 'pending',

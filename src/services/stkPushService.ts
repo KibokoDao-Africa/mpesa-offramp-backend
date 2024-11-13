@@ -20,7 +20,7 @@ export const createSTKPushRequest = async (data: STKPushRequestData) => {
     // Create an STK Push request record in the database
     const stkPushRequest = await db.STKPushRequest.create({
       transactionId: data.transactionId,
-      requestId: response.ConversationID,
+      // requestId: response.ConversationID,
       status: response.ResponseCode === '0' ? 'completed' : 'pending',
     });
 

@@ -39,7 +39,7 @@ export const createOnrampTransaction = async (data: TransactionData) => {
       // Create a record for the STK Push request in the database
       await db.STKPushRequest.create({
         transactionId: transaction.id,
-        requestId: response.ConversationID,
+        // requestId: response.ConversationID,
         status: 'pending',
       });
 

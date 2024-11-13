@@ -13,10 +13,10 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
       },
-      requestId: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
+      // requestId: {
+      //   type: Sequelize.STRING,
+      //   allowNull: false,
+      // },
       status: {
         type: Sequelize.ENUM('pending', 'completed'),
         defaultValue: 'pending',
