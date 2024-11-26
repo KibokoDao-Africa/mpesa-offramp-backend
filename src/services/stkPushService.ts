@@ -17,17 +17,20 @@ export const createSTKPushRequest = async (data: STKPushRequestData) => {
     const response = await performSTKPush(data.phoneNumber, data.amount);
     console.log("STK Push Response:", response);
 
+    // Ensure ResponseCode is numeric
+    const responseCode = parseInt(response.ResponseCode, 10);
+
     // Create an STK Push request record in the database
     const stkPushRequest = await db.STKPushRequest.create({
       transactionId: data.transactionId,
-      // requestId: response.ConversationID,
-      status: response.ResponseCode === '0' ? 'completed' : 'pending',
+      responseCode,
+      status: responseCode === 0 ? 'completed' : 'pending',
     });
 
     console.log("STK Push Request Created:", stkPushRequest);
 
     // Update the status of the associated transaction
-    if (response.ResponseCode === '0') {
+    if (responseCode === 0) {
       await updateStatus(data.transactionId, 'unprocessed');
     }
 
