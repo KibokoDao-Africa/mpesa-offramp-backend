@@ -48,9 +48,9 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
   const { data: response } = await axios.post(
     process.env.SAFARICOM_STK_PUSH_URL!,
     {
-      BusinessShortCode: shortcode,
-      Timestamp: timestamp,
+      BusinessShortCode: shortcode,     
       Password: generatePassword(shortcode, passkey, timestamp),
+      Timestamp: timestamp,
       TransactionType: 'CustomerPayBillOnline',
       Amount: formattedAmount,
       PartyA: phoneNumber,
