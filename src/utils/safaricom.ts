@@ -52,39 +52,54 @@ const generatePassword = (shortcode: string, passkey: string, timestamp: string)
 
 
 export const performSTKPush = async (phoneNumber: string, amount: number) => {
-  const formattedAmount = parseFloat(amount.toFixed(2));
-  console.log("Performing STK Push:", { phoneNumber, formattedAmount });
+  try {
+    const formattedAmount = parseFloat(amount.toFixed(2));
+    console.log("Performing STK Push:", { phoneNumber, formattedAmount });
 
-  const token = await getOAuthToken();
-  const timestamp = generateTimestamp();
-  const shortcode = process.env.SAFARICOM_SHORT_CODE!;
-  const passkey = process.env.SAFARICOM_PASSKEY!;
+    const token = await getOAuthToken();
+    const timestamp = generateTimestamp();
+    const shortcode = process.env.SAFARICOM_SHORT_CODE!;
+    const passkey = process.env.SAFARICOM_PASSKEY!;
 
-  const { data: response } = await axios.post(
-    process.env.SAFARICOM_STK_PUSH_URL!,
-    {
-      BusinessShortCode: shortcode,     
-      Password: generatePassword(shortcode, passkey, timestamp),
-      Timestamp: timestamp,
-      TransactionType: 'CustomerPayBillOnline',
-      Amount: formattedAmount,
-      PartyA: phoneNumber,
-      PartyB: shortcode,
-      PhoneNumber: phoneNumber,
-      CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush/`,
-      AccountReference: 'Onramp',
-      TransactionDesc: 'Onramp Payment',
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const { data: response } = await axios.post(
+      process.env.SAFARICOM_STK_PUSH_URL!,
+      {
+        BusinessShortCode: shortcode,
+        Password: generatePassword(shortcode, passkey, timestamp),
+        Timestamp: timestamp,
+        TransactionType: 'CustomerPayBillOnline',
+        Amount: formattedAmount,
+        PartyA: phoneNumber,
+        PartyB: shortcode,
+        PhoneNumber: phoneNumber,
+        CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush/callback`,
+        AccountReference: 'Onramp',
+        TransactionDesc: 'Onramp Payment',
       },
-    }
-  );
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  console.log("STK Push response:", response);
-  return response;
+    console.log("STK Push response:", response);
+    return response;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // Axios-specific error
+      console.error("Error performing STK Push:", error.response?.data || error.message);
+    } else if (error instanceof Error) {
+      // General JavaScript error
+      console.error("Error performing STK Push:", error.message);
+    } else {
+      // Unknown error
+      console.error("Unknown error performing STK Push:", error);
+    }
+    throw new Error("Failed to perform STK Push. Check the request parameters and Safaricom API status.");
+  }
 };
+
 
 
 // B2C (Business to Customer) Payment
