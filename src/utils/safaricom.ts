@@ -15,17 +15,32 @@ const generateTimestamp = () => {
 };
 
 // Utility to obtain OAuth token for Safaricom Daraja API
-const getOAuthToken = async () => {
-  console.log("Requesting OAuth token");
-  const { data: oauthData } = await axios.get(process.env.SAFARICOM_OAUTH_URL!, {
-    auth: {
-      username: process.env.SAFARICOM_CONSUMER_KEY!,
-      password: process.env.SAFARICOM_CONSUMER_SECRET!,
-    },
-  });
-  console.log("Received OAuth token:", oauthData.access_token);
-  return oauthData.access_token;
+const getOAuthToken = async (): Promise<string> => {
+  try {
+    console.log("Requesting OAuth token");
+    const { data: oauthData } = await axios.get(process.env.SAFARICOM_OAUTH_URL!, {
+      auth: {
+        username: process.env.SAFARICOM_CONSUMER_KEY!,
+        password: process.env.SAFARICOM_CONSUMER_SECRET!,
+      },
+    });
+    console.log("Received OAuth token:", oauthData.access_token);
+    return oauthData.access_token;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // Axios-specific error
+      console.error("Error requesting OAuth token:", error.response?.data || error.message);
+    } else if (error instanceof Error) {
+      // Generic error
+      console.error("Error requesting OAuth token:", error.message);
+    } else {
+      // Unknown error
+      console.error("Unknown error requesting OAuth token:", error);
+    }
+    throw new Error("Failed to retrieve OAuth token. Check your credentials or Safaricom API status.");
+  }
 };
+
 
 // STK Push functionality
 
