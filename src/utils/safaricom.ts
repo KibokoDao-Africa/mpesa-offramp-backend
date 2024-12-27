@@ -64,6 +64,13 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
     const shortcode = process.env.SAFARICOM_SHORT_CODE!;
     const passkey = process.env.SAFARICOM_PASSKEY!;
     const partyB=process.env.PARTY_B;
+
+    const password = generatePassword(shortcode, passkey, timestamp);
+
+    // Log the password and timestamp
+    console.log("Generated Password:", password);
+    console.log("Generated Timestamp:", timestamp);
+
     const { data: response } = await axios.post(
       process.env.SAFARICOM_STK_PUSH_URL!,
       {
