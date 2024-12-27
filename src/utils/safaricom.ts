@@ -73,7 +73,7 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
         TransactionType: 'CustomerPayBillOnline',
         Amount: formattedAmount,
         PartyA: phoneNumber,
-        PartyB: shortcode,
+        PartyB: partyB,
         PhoneNumber: phoneNumber,
         CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush/callback`,
         AccountReference: 'Onramp',
