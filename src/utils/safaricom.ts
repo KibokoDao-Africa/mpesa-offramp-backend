@@ -63,17 +63,17 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
     const timestamp = generateTimestamp();
     const shortcode = process.env.SAFARICOM_SHORT_CODE!;
     const passkey = process.env.SAFARICOM_PASSKEY!;
-
+    const partyB=process.env.PARTY_B;
     const { data: response } = await axios.post(
       process.env.SAFARICOM_STK_PUSH_URL!,
       {
-        BusinessShortCode: shortcode,
+        BusinessShortCode: partyB,
         Password: generatePassword(shortcode, passkey, timestamp),
         Timestamp: timestamp,
         TransactionType: 'CustomerPayBillOnline',
         Amount: formattedAmount,
         PartyA: phoneNumber,
-        PartyB: shortcode,
+        PartyB: partyB,
         PhoneNumber: phoneNumber,
         CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush/callback`,
         AccountReference: 'Onramp',
