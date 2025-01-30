@@ -63,7 +63,7 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
     const timestamp = generateTimestamp();
     const shortcode = process.env.SAFARICOM_SHORT_CODE!;
     const passkey = process.env.SAFARICOM_PASSKEY!;
-    const partyB=process.env.NEW_PARTY_B;
+    const partyB=process.env.PARTY_B;
 
     const password = generatePassword(shortcode, passkey, timestamp);
 
