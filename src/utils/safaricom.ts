@@ -54,61 +54,64 @@ const generatePassword = (shortcode: string, passkey: string, timestamp: string)
 };
 
 
+// Function to perform STK Push
 export const performSTKPush = async (phoneNumber: string, amount: number) => {
   try {
     const formattedAmount = parseFloat(amount.toFixed(2));
-    console.log("Performing STK Push:", { phoneNumber, formattedAmount });
+    console.log("Performing STK Push with:", { phoneNumber, formattedAmount });
 
     const token = await getOAuthToken();
     const timestamp = generateTimestamp();
     const shortcode = process.env.SAFARICOM_SHORT_CODE!;
     const passkey = process.env.SAFARICOM_PASSKEY!;
-    const partyB=process.env.PARTY_B;
+    const partyB = process.env.NEW_PARTY_B!; // Kept as before (retrieved from .env)
 
     const password = generatePassword(shortcode, passkey, timestamp);
 
-    // Log the password and timestamp
-    console.log("Generated Password:", password);
-    console.log("Generated Timestamp:", timestamp);
+    // Construct STK Push request body
+    const requestBody = {
+      BusinessShortCode: shortcode,
+      Password: password,
+      Timestamp: timestamp,
+      TransactionType: 'CustomerPayBillOnline',
+      Amount: formattedAmount,
+      PartyA: phoneNumber,
+      PartyB: partyB, // Kept static from .env
+      PhoneNumber: phoneNumber,
+      CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush/callback`,
+      AccountReference: 'Onramp',
+      TransactionDesc: 'Onramp Payment',
+    };
+
+    // ✅ Logging the full request payload before sending
+    console.log("🔹 STK Push Request Payload:", JSON.stringify(requestBody, null, 2));
 
     const { data: response } = await axios.post(
       process.env.SAFARICOM_STK_PUSH_URL!,
-      {
-        BusinessShortCode: shortcode,
-        Password: generatePassword(shortcode, passkey, timestamp),
-        Timestamp: timestamp,
-        TransactionType: 'CustomerPayBillOnline',
-        Amount: formattedAmount,
-        PartyA: phoneNumber,
-        PartyB: partyB,
-        PhoneNumber: phoneNumber,
-        CallBackURL: `${process.env.CALLBACK_URL}/api/stkpush/callback`,
-        AccountReference: 'Onramp',
-        TransactionDesc: 'Onramp Payment',
-      },
+      requestBody,
       {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       }
     );
 
-    console.log("STK Push response:", response);
+    // ✅ Logging the response from Safaricom
+    console.log("✅ STK Push Response:", JSON.stringify(response, null, 2));
+
     return response;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      // Axios-specific error
-      console.error("Error performing STK Push:", error.response?.data || error.message);
+      console.error("❌ Error performing STK Push:", error.response?.data || error.message);
     } else if (error instanceof Error) {
-      // General JavaScript error
-      console.error("Error performing STK Push:", error.message);
+      console.error("❌ Error performing STK Push:", error.message);
     } else {
-      // Unknown error
-      console.error("Unknown error performing STK Push:", error);
+      console.error("❌ Unknown error performing STK Push:", error);
     }
-    throw new Error("Failed to perform STK Push. Check the request parameters and Safaricom API status.");
+    throw new Error("Failed to perform STK Push. Check request parameters and Safaricom API status.");
   }
-};
+}
 
 
 
