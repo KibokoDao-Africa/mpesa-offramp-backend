@@ -73,7 +73,7 @@ export const performSTKPush = async (phoneNumber: string, amount: number) => {
       BusinessShortCode: shortcode,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: 'CustomerPayBillOnline',
+      TransactionType: 'CustomerBuyGoodsOnline',
       Amount: formattedAmount,
       PartyA: phoneNumber,
       PartyB: partyB, // Kept static from .env
